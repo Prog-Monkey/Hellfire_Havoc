@@ -94,8 +94,9 @@ class Platform(pygame.sprite.Sprite):
 
 # Create platforms
 platforms = pygame.sprite.Group()
-platform1 = Platform(0, screen_height - 10, screen_width, platform_height, "Platform.png")
+platform1 = Platform(0, screen_height -1, screen_width, platform_height, "Platform.png")
 platform2 = Platform(0, screen_height - 100, platform_width, platform_height, "Platform.png")
+platform3 = Platform(0, screen_height - 200, 20, 50, "Platform.png")
 platforms.add(platform1, platform2)
 
 # Create sprite objects for ghost and hydra
@@ -203,17 +204,26 @@ while running:
     hydra_sprite.rect.y += hydra_velocity_y
 
     # Check for collisions with platforms
+ # Check for collisions with platforms
     ghost_collided_platforms = pygame.sprite.spritecollide(ghost_sprite, platforms, False)
-    if ghost_collided_platforms:
-        jumping_ghost = False
-        ghost_velocity_y = 0
-        ghost_sprite.rect.bottom = ghost_collided_platforms[0].rect.top
+    for platform in ghost_collided_platforms:
+        if ghost_velocity_y > 0:  # Check if ghost is moving downwards
+            ghost_sprite.rect.bottom = platform.rect.top  # Set ghost's bottom to top of platform
+            ghost_velocity_y = 0  # Stop ghost's vertical movement
+            jumping_ghost = False  # Ghost is no longer jumping
+        elif ghost_velocity_y < 0:  # Check if ghost is moving upwards
+            ghost_sprite.rect.top = platform.rect.bottom  # Set ghost's top to bottom of platform
+            ghost_velocity_y = 0  # Stop ghost's vertical movement
 
     hydra_collided_platforms = pygame.sprite.spritecollide(hydra_sprite, platforms, False)
-    if hydra_collided_platforms:
-        jumping_hydra = False
-        hydra_velocity_y = 0
-        hydra_sprite.rect.bottom = hydra_collided_platforms[0].rect.top
+    for platform in hydra_collided_platforms:
+        if hydra_velocity_y > 0:  # Check if hydra is moving downwards
+            hydra_sprite.rect.bottom = platform.rect.top  # Set hydra's bottom to top of platform
+            hydra_velocity_y = 0  # Stop hydra's vertical movement
+            jumping_hydra = False  # Hydra is no longer jumping
+        elif hydra_velocity_y < 0:  # Check if hydra is moving upwards
+            hydra_sprite.rect.top = platform.rect.bottom  # Set hydra's top to bottom of platform
+            hydra_velocity_y = 0  # Stop hydra's vertical movement
 
     # Check for collision between ghost and hydra
     if ghost_sprite.rect.colliderect(hydra_sprite.rect):
