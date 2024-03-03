@@ -92,7 +92,7 @@ class Platform(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-# Create platforms
+# Create platforms x pos, y pos, how big in w, how big in y,image
 platforms = pygame.sprite.Group()
 platform1 = Platform(0, screen_height -1, screen_width, platform_height, "Platform.png")
 platform2 = Platform(0, screen_height - 100, platform_width, platform_height, "Platform.png")
@@ -146,7 +146,7 @@ while running:
                 hydra_vel_x = 0
 
         # Check for key press to restart the game
-        elif event.type == KEYDOWN and event.key == K_x and not ghost_life:
+        if event.type == KEYDOWN and event.key == K_x and not ghost_life :
             # Reset the game
             ghost_sprite.rect.center = (screen_width // 2, screen_height // 2)
             hydra_sprite.rect.center = (screen_width // 7, hydra_sprite.rect.width // 2)
@@ -157,7 +157,7 @@ while running:
             ghost_sprite.image = ghost  # Change ghost back to ghost image
             hydra_sprite.image = hydra  # Change hydra back to hydra image
             start_ticks = pygame.time.get_ticks()  # Reset the timer
-        elif event.type == KEYDOWN and event.key == K_x and ghost_won:
+        if event.type == KEYDOWN and event.key == K_x and ghost_won :
             # Reset the game
             ghost_sprite.rect.center = (screen_width // 2, screen_height // 2)
             hydra_sprite.rect.center = (screen_width // 7, hydra_sprite.rect.width // 2)
