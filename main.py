@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
@@ -43,7 +44,7 @@ ghost = pygame.transform.scale(ghost, (character_width, character_height))
 god = pygame.image.load("God.png")
 god = pygame.transform.scale(god, (character_width, character_height))  # Resize god image
 grave = pygame.image.load("grave_stone.png")
-grave = pygame.transform.scale(grave, (character_width, character_height))  # Resize grave image
+grave = pygame.transform.scale(grave, (character_width+50, character_height+50))  # Resize grave image
 icon = god
 icon = pygame.transform.scale(icon, (80, 50))
 pygame.display.set_caption("The Capture")
@@ -55,17 +56,7 @@ hydra = pygame.transform.scale(hydra, (64, 64))
 
 # Define gravity and initial velocities
 gravity = 0.5
-ghost_velocity_y = 0  # Set initial vertical velocity to 0
-hydra_velocity_y = 0  # Set initial vertical velocity for hydra to 0
-jumping_ghost = False
-jumping_hydra = False
 jump_velocity = -12
-
-# Define player movement variables
-ghost_vel_x = 0
-hydra_vel_x = 0
-acceleration = 5
-friction = 0
 
 # Load the background image
 background = pygame.image.load("background.png").convert()
@@ -92,58 +83,79 @@ class Platform(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-# Create platforms x pos, y pos, how big in w, how big in y,image
-platforms = pygame.sprite.Group()
-platform1 = Platform(0, screen_height -1, screen_width, platform_height, "Platform.png")
-platform2 = Platform(0, screen_height - 100, platform_width, platform_height, "Platform.png")
-platform3 = Platform(0, screen_height - 200, 20, 50, "Platform.png")
-platforms.add(platform1, platform2)
+# Function to generate random platforms
+def generate_random_platforms():
+    platforms = pygame.sprite.Group()
 
-# Create sprite objects for ghost and hydra
-ghost_sprite = pygame.sprite.Sprite()
-ghost_sprite.image = ghost
-ghost_sprite.rect = ghost_sprite.image.get_rect()
-ghost_sprite.rect.center = (screen_width // 2, screen_height // 2)
+    # Add platform covering the entire ground
+    ground_platform = Platform(0, screen_height - platform_height, screen_width, platform_height, "Platform.png")
+    platforms.add(ground_platform)
 
-hydra_sprite = pygame.sprite.Sprite()
-hydra_sprite.image = hydra
-hydra_sprite.rect = hydra_sprite.image.get_rect()
-hydra_sprite.rect.center = (screen_width // 7, hydra_sprite.rect.width // 2)
+    # Generate random platforms
+    num_platforms = random.randint(5, 10)  # Random number of platforms
+    for _ in range(num_platforms):
+        x = random.randint(0, screen_width - platform_width)
+        y = random.randint(100, screen_height - platform_height - 50)
+        platform = Platform(x, y, platform_width, platform_height, "Platform.png")
+        platforms.add(platform)
+
+    return platforms
+
+# Create initial platforms
+platforms = generate_random_platforms()
+
+# Custom Player class
+class Player(pygame.sprite.Sprite):
+    def __init__(self, image, x, y):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.velocity_x = 0
+        self.velocity_y = 0
+
+    def update(self):
+        self.rect.x += self.velocity_x
+        self.rect.y += self.velocity_y
+
+# Create sprite objects for ghost and hydra using the custom Player class
+ghost_sprite = Player(ghost, screen_width // 2, screen_height // 2)
+hydra_sprite = Player(hydra, screen_width // 7, screen_height // 2)
 
 ghost_life = True
 ghost_won = False
 running = True
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Get the current time in milliseconds
-countdown_seconds = 30
+countdown_seconds = 20
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
 
-        elif event.type == KEYDOWN and ghost_life:
+        elif event.type == KEYDOWN and not ghost_won and ghost_life:
             if event.key == K_ESCAPE:
                 running = False
             elif event.key == K_LEFT:
-                ghost_vel_x = -9
+                ghost_sprite.velocity_x = -9
             elif event.key == K_RIGHT:
-                ghost_vel_x = 9
+                ghost_sprite.velocity_x = 9
             elif event.key == K_UP and not jumping_ghost:
                 jumping_ghost = True
-                ghost_velocity_y = jump_velocity
+                ghost_sprite.velocity_y = jump_velocity
 
             elif event.key == K_a:
-                hydra_vel_x = -7
+                hydra_sprite.velocity_x = -7
             elif event.key == K_d:
-                hydra_vel_x = 7
+                hydra_sprite.velocity_x = 7
             elif event.key == K_w and not jumping_hydra:
                 jumping_hydra = True
-                hydra_velocity_y = jump_velocity
+                hydra_sprite.velocity_y = jump_velocity
         elif event.type == KEYUP:
             if event.key == K_LEFT or event.key == K_RIGHT:
-                ghost_vel_x = 0
+                ghost_sprite.velocity_x = 0
             if event.key == K_a or event.key == K_d:
-                hydra_vel_x = 0
+                hydra_sprite.velocity_x = 0
 
         # Check for key press to restart the game
         if event.type == KEYDOWN and event.key == K_x and not ghost_life :
@@ -179,55 +191,33 @@ while running:
             ghost_won = True  # Ghost wins after 30 seconds
 
     # Apply gravity to ghost and hydra
-    ghost_velocity_y += gravity
-    hydra_velocity_y += gravity
+    ghost_sprite.velocity_y += gravity
+    hydra_sprite.velocity_y += gravity
 
-    # Apply horizontal movement for ghost and hydra
-    ghost_sprite.rect.x += ghost_vel_x
-    hydra_sprite.rect.x += hydra_vel_x
-
-    # Apply friction to slow down ghost and hydra
-    if ghost_vel_x != 0:
-        if ghost_vel_x > 0:
-            ghost_vel_x = max(0, ghost_vel_x - friction)
-        else:
-            ghost_vel_x = min(0, ghost_vel_x + friction)
-
-    if hydra_vel_x != 0:
-        if hydra_vel_x > 0:
-            hydra_vel_x = max(0, hydra_vel_x - friction)
-        else:
-            hydra_vel_x = min(0, hydra_vel_x + friction)
-
-    # Apply vertical movement for ghost and hydra
-    ghost_sprite.rect.y += ghost_velocity_y
-    hydra_sprite.rect.y += hydra_velocity_y
+    # Update player positions
+    ghost_sprite.update()
+    hydra_sprite.update()
 
     # Check for collisions with platforms
- # Check for collisions with platforms
     ghost_collided_platforms = pygame.sprite.spritecollide(ghost_sprite, platforms, False)
     for platform in ghost_collided_platforms:
-        if ghost_velocity_y > 0:  # Check if ghost is moving downwards
+        if ghost_sprite.velocity_y > 0:  # Check if ghost is moving downwards
             ghost_sprite.rect.bottom = platform.rect.top  # Set ghost's bottom to top of platform
-            ghost_velocity_y = 0  # Stop ghost's vertical movement
+            ghost_sprite.velocity_y = 0  # Stop ghost's vertical movement
             jumping_ghost = False  # Ghost is no longer jumping
-        elif ghost_velocity_y < 0:  # Check if ghost is moving upwards
+        elif ghost_sprite.velocity_y < 0:  # Check if ghost is moving upwards
             ghost_sprite.rect.top = platform.rect.bottom  # Set ghost's top to bottom of platform
-            ghost_velocity_y = 0  # Stop ghost's vertical movement
+            ghost_sprite.velocity_y = 0  # Stop ghost's vertical movement
 
     hydra_collided_platforms = pygame.sprite.spritecollide(hydra_sprite, platforms, False)
     for platform in hydra_collided_platforms:
-        if hydra_velocity_y > 0:  # Check if hydra is moving downwards
+        if hydra_sprite.velocity_y > 0:  # Check if hydra is moving downwards
             hydra_sprite.rect.bottom = platform.rect.top  # Set hydra's bottom to top of platform
-            hydra_velocity_y = 0  # Stop hydra's vertical movement
+            hydra_sprite.velocity_y = 0  # Stop hydra's vertical movement
             jumping_hydra = False  # Hydra is no longer jumping
-        elif hydra_velocity_y < 0:  # Check if hydra is moving upwards
+        elif hydra_sprite.velocity_y < 0:  # Check if hydra is moving upwards
             hydra_sprite.rect.top = platform.rect.bottom  # Set hydra's top to bottom of platform
-            hydra_velocity_y = 0  # Stop hydra's vertical movement
-
-    # Check for collision between ghost and hydra
-    if ghost_sprite.rect.colliderect(hydra_sprite.rect):
-        ghost_life = False
+            hydra_sprite.velocity_y = 0  # Stop hydra's vertical movement
 
     # Limit the ghost and hydra within the screen boundaries
     ghost_sprite.rect.x = max(0, min(ghost_sprite.rect.x, screen_width - ghost_sprite.rect.width))
@@ -246,37 +236,33 @@ while running:
     screen.blit(ghost_sprite.image, ghost_sprite.rect)
     screen.blit(hydra_sprite.image, hydra_sprite.rect)
 
+    if ghost_sprite.rect.colliderect(hydra_sprite.rect):
+        ghost_life = False
+
     # Display "Game Over" text if ghost is dead
     if not ghost_life:
+        screen.blit(grave, ghost_sprite.rect)  # Change ghost to grave image
+        ghost_sprite.image = grave    # Blit grave image
+
         game_over_rect = game_over_textE.get_rect(center=(screen_width // 2, screen_height // 2 - 30))
         screen.blit(game_over_textE, game_over_rect)
+
         restart_rect = restart_text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
         screen.blit(restart_text, restart_rect)
-        screen.blit(grave, ghost_sprite.rect)  # Change ghost to grave image
-        ghost_sprite.image = grave  # Change ghost image to grave
-        ghost_vel_x = 0  # Stop ghost movement
-        hydra_vel_x = 0  # Stop hydra movement
-    else:
-        ghost_sprite.image = ghost
-        hydra_sprite.image = hydra
 
     if ghost_won:
+        ghost_sprite.image = god  # Change ghost image to god
+
+        god_rect = god.get_rect(center=ghost_sprite.rect.center)
+        screen.blit(god, god_rect)  # Blit god image
+
         game_over_rect = game_over_textG.get_rect(center=(screen_width // 2, screen_height // 2 - 30))
         screen.blit(game_over_textG, game_over_rect)
+
         restart_rect = restart_text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
         screen.blit(restart_text, restart_rect)
-        screen.blit(god, ghost_sprite.rect)  # Change ghost to god image
-        ghost_sprite.image = god  # Change ghost image to god
-        ghost_vel_x = 0  # Stop ghost movement
-        hydra_vel_x = 0  # Stop hydra movement
-    else:
-        ghost_sprite.image = ghost
-        hydra_sprite.image = hydra
-
-    # Display the remaining time
     timer_text = font2.render(f"Time: {remaining_seconds}", True, (255, 255, 255))
     screen.blit(timer_text, (10, 10))
-
     # Update the display
     pygame.display.update()
 
