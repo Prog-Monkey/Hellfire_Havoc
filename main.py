@@ -19,7 +19,7 @@ pygame.init()
 pygame.mixer.init()
 
 pygame.mixer.music.load("Music.mp3")
-pygame.mixer.music.gitplay(loops=1001, start=10, fade_ms=100)
+pygame.mixer.music.play(loops=1001, start=10, fade_ms=100)
 pygame.mixer.music.set_volume(2)
 
 # Define constants for the screen width and height
