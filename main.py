@@ -254,16 +254,16 @@ while running and not menu_running:
             background = random.randint(0,5)
             if background == 1:
                 backgroundGame = pygame.transform.scale(background1, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("Platform.png").convert_alpha()
             elif background==2:
                 backgroundGame = pygame.transform.scale(background2, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("Platform.png").convert_alpha()
             elif background==3:
                 backgroundGame = pygame.transform.scale(background3, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("Platform.png").convert_alpha()
             elif background==4:
                 backgroundGame = pygame.transform.scale(background4, screen_size)
-                platform_image = pygame.image.load("Platform1.png").convert()
+                platform_image = pygame.image.load("Platform1.png").convert_alpha()
                 platforms = generate_random_platforms()
             start_ticks = pygame.time.get_ticks()  # Reset the timer
 
