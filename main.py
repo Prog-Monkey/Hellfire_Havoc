@@ -178,6 +178,9 @@ while menu_running:
             mouse_pos = pygame.mouse.get_pos()
             if play_rect.collidepoint(mouse_pos):
                 menu_running = False
+                clock = pygame.time.Clock()
+                start_ticks = pygame.time.get_ticks()  # Get the current time in milliseconds
+                countdown_seconds = 20
     
     screen.blit(menu_background,menu_rect)
     screen.blit(copyright_text, copyright_rect)
@@ -189,9 +192,7 @@ while menu_running:
 
 # Main game loop
 while running and not menu_running:
-    clock = pygame.time.Clock()
-    start_ticks = pygame.time.get_ticks()  # Get the current time in milliseconds
-    countdown_seconds = 20
+    
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
