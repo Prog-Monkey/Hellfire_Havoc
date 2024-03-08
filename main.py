@@ -76,7 +76,7 @@ elif background==3:
     platform_image = pygame.image.load("images/Platform.png").convert()
 elif background==4:
     backgroundGame = pygame.transform.scale(background4, screen_size)
-    platform_image = pygame.image.load("images/Platform1.png").convert()
+    platform_image = pygame.image.load("images/Platform1.png").convert_alpha()
 
 
 
