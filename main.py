@@ -19,7 +19,7 @@ from pygame.locals import (
 pygame.init()
 pygame.mixer.init()
 
-pygame.mixer.music.load("Music.mp3")
+pygame.mixer.music.load("Music FromSoftware 2011.mp3")
 pygame.mixer.music.play(loops=1001, start=10, fade_ms=100)
 pygame.mixer.music.set_volume(2)
 
@@ -38,19 +38,19 @@ character_height = 50
 screen = pygame.display.set_mode(screen_size)
 
 # Load the character image
-ghost = pygame.image.load('ghost_final.png')
+ghost = pygame.image.load('images/ghost_final.png')
 ghost = pygame.transform.scale(ghost, (character_width, character_height))
-god = pygame.image.load("God.png")
+god = pygame.image.load("images/God.png")
 god = pygame.transform.scale(god, (character_width, character_height))  # Resize god image
-grave = pygame.image.load("grave_stone.png")
+grave = pygame.image.load("images/grave_stone.png")
 grave = pygame.transform.scale(grave, (character_width+50, character_height+50))  # Resize grave image
 icon = god
 icon = pygame.transform.scale(icon, (80, 50))
-pygame.display.set_caption("The Capture")
+pygame.display.set_caption("Hellfire Havoc")
 pygame.display.set_icon(icon)
 
 # Hydra image
-hydra = pygame.image.load("Hydra.png").convert_alpha()
+hydra = pygame.image.load("images/Hydra.png").convert_alpha()
 hydra = pygame.transform.scale(hydra, (64, 64))
 
 # Define gravity and initial velocities
@@ -58,31 +58,31 @@ gravity = 0.5
 jump_velocity = -12
 
 # Load the background image
-background1 = pygame.image.load("background.png").convert()
-background2 = pygame.image.load("background2.png").convert()
-background3 = pygame.image.load("background3.png").convert()
-background4 = pygame.image.load("background4.png").convert()
+background1 = pygame.image.load("images/background.png").convert()
+background2 = pygame.image.load("images/background2.png").convert()
+background3 = pygame.image.load("images/background3.png").convert()
+background4 = pygame.image.load("images/background4.png").convert()
 background = random.randint(0,5)
-platform_image = pygame.image.load("Platform.png").convert()
+platform_image = pygame.image.load("images/Platform.png").convert()
 backgroundGame = backgroundGame = pygame.transform.scale(background1, screen_size)
 if background == 1:
     backgroundGame = pygame.transform.scale(background1, screen_size)
-    platform_image = pygame.image.load("Platform.png").convert()
+    platform_image = pygame.image.load("images/Platform.png").convert()
 elif background==2:
     backgroundGame = pygame.transform.scale(background2, screen_size)
-    platform_image = pygame.image.load("Platform.png").convert()
+    platform_image = pygame.image.load("images/Platform.png").convert()
 elif background==3:
     backgroundGame = pygame.transform.scale(background3, screen_size)
-    platform_image = pygame.image.load("Platform.png").convert()
+    platform_image = pygame.image.load("images/Platform.png").convert()
 elif background==4:
     backgroundGame = pygame.transform.scale(background4, screen_size)
-    platform_image = pygame.image.load("Platform1.png").convert()
+    platform_image = pygame.image.load("images/Platform1.png").convert()
 
 
 
 # Define font and create a text surface
-font1 = pygame.font.Font("Micro5-Regular.ttf", 70)
-font2 = pygame.font.Font("Micro5-Regular.ttf", 50)
+font1 = pygame.font.Font("fonts/Micro5-Regular.ttf", 70)
+font2 = pygame.font.Font("fonts/Micro5-Regular.ttf", 50)
 game_over_textE = font1.render("Hell Won", True, (255, 0, 0))
 game_over_textG = font1.render("God Won", True, (255, 0, 0))
 restart_text = font2.render("Press X to Restart", True, (0, 255, 20))
@@ -116,7 +116,7 @@ def generate_random_platforms():
     for _ in range(num_platforms):
         x = random.randint(0, screen_width - platform_width)
         y = random.randint(100, screen_height - platform_height - 50)
-        platform = Platform(x, y, platform_width, platform_height, "Platform.png")
+        platform = Platform(x, y, platform_width, platform_height, "images/Platform.png")
         platforms.add(platform)
 
     return platforms
@@ -145,23 +145,25 @@ hydra_sprite = Player(hydra, screen_width // 7, screen_height // 2)
 ghost_life = True
 ghost_won = False
 running = True
-clock = pygame.time.Clock()
-start_ticks = pygame.time.get_ticks()  # Get the current time in milliseconds
 
 
 # Define menu variables
-menu_font = pygame.font.Font("StalinistOne-Regular.ttf", 48)
-font_copyright = pygame.font.Font("StalinistOne-Regular.ttf", 10)
+menu_font = pygame.font.Font("fonts/StalinistOne-Regular.ttf", 48)
+font_copyright = pygame.font.Font("fonts/StalinistOne-Regular.ttf", 10)
+font_owner = pygame.font.Font(None, 30)
 play_text = menu_font.render("Play", True, (255, 255, 255))
 play_rect = play_text.get_rect(center=(screen_width // 2, screen_height // 2))
 title_text = menu_font.render("HELLFIRE HAVOC", True, (255, 0, 0))
 title_rect = play_text.get_rect(center=(350, screen_height // 7))
-menu_background = pygame.image.load("Hell_Menu.jpg")
+menu_background = pygame.image.load("images/Hell_Menu.jpg")
 menu_background = pygame.transform.scale(menu_background, (screen_width, screen_height))
 menu_rect = menu_background.get_rect(center=(screen_width//2,screen_height//2))
 copyright_text = font_copyright.render("Composer: Motoi Sakuraba Track #22 Japanese Collector's Edition of Dark Souls ©2011 FromSoftware", True, (255, 255, 255))
 copyright_rect = copyright_text.get_rect(center=(500,630))
+owner_text = font_owner.render("made by the champion", True, (255, 255, 255))
+owner_rect = owner_text.get_rect(center=(600,400))
 # Menu loop
+
 menu_running = True
 while menu_running:
     for event in pygame.event.get():
@@ -179,6 +181,7 @@ while menu_running:
     
     screen.blit(menu_background,menu_rect)
     screen.blit(copyright_text, copyright_rect)
+    screen.blit(owner_text, owner_rect)
     screen.blit(play_text, play_rect)
     screen.blit(title_text,title_rect)
    
@@ -186,6 +189,8 @@ while menu_running:
 
 # Main game loop
 while running and not menu_running:
+    clock = pygame.time.Clock()
+    start_ticks = pygame.time.get_ticks()  # Get the current time in milliseconds
     countdown_seconds = 20
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -229,16 +234,16 @@ while running and not menu_running:
             background = random.randint(0,5)
             if background == 1:
                 backgroundGame = pygame.transform.scale(background1, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("images/Platform.png").convert()
             elif background==2:
                 backgroundGame = pygame.transform.scale(background2, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("images/Platform.png").convert()
             elif background==3:
                 backgroundGame = pygame.transform.scale(background3, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert()
+                platform_image = pygame.image.load("images/Platform.png").convert()
             elif background==4:
                 backgroundGame = pygame.transform.scale(background4, screen_size)
-                platform_image = pygame.image.load("Platform1.png").convert_alpha()
+                platform_image = pygame.image.load("images/Platform1.png").convert_alpha()
             platforms = generate_random_platforms()
             start_ticks = pygame.time.get_ticks()  # Reset the timer
         if event.type == KEYDOWN and event.key == K_x and ghost_won:
