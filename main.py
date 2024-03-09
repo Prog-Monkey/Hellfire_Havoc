@@ -24,8 +24,9 @@ pygame.mixer.music.play(loops=1001, start=10, fade_ms=100)
 pygame.mixer.music.set_volume(2)
 
 # Define constants for the screen width and height
-screen_width = 1200
-screen_height = 650
+info = pygame.display.Info()
+screen_width = info.current_w
+screen_height =info.current_h
 screen_size = screen_width, screen_height
 
 # Platform and character sizes
@@ -161,7 +162,7 @@ menu_rect = menu_background.get_rect(center=(screen_width//2,screen_height//2))
 copyright_text = font_copyright.render("Composer: Motoi Sakuraba Track #22 Japanese Collector's Edition of Dark Souls ©2011 FromSoftware", True, (255, 255, 255))
 copyright_rect = copyright_text.get_rect(center=(500,630))
 owner_text = font_owner.render("made by the champion", True, (255, 255, 255))
-owner_rect = owner_text.get_rect(center=(600,400))
+owner_rect = owner_text.get_rect(center=(screen_width/2,500))
 # Menu loop
 
 menu_running = True
@@ -260,16 +261,16 @@ while running and not menu_running:
             background = random.randint(0,5)
             if background == 1:
                 backgroundGame = pygame.transform.scale(background1, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert_alpha()
+                platform_image = pygame.image.load("images/Platform.png").convert_alpha()
             elif background==2:
                 backgroundGame = pygame.transform.scale(background2, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert_alpha()
+                platform_image = pygame.image.load("images/Platform.png").convert_alpha()
             elif background==3:
                 backgroundGame = pygame.transform.scale(background3, screen_size)
-                platform_image = pygame.image.load("Platform.png").convert_alpha()
+                platform_image = pygame.image.load("images/Platform.png").convert_alpha()
             elif background==4:
                 backgroundGame = pygame.transform.scale(background4, screen_size)
-                platform_image = pygame.image.load("Platform1.png").convert_alpha()
+                platform_image = pygame.image.load("images/Platform1.png").convert_alpha()
                 platforms = generate_random_platforms()
             start_ticks = pygame.time.get_ticks()  # Reset the timer
 
